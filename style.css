@@ -2,26 +2,45 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     padding: 20px;
+    background-color: #f0f0f0;
 }
 #usernamePrompt {
     margin-top: 100px;
+    text-align: center;
 }
 #searchInput {
     padding: 10px;
     width: 300px;
+    margin-bottom: 10px;
 }
 button {
     padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #45a049;
 }
 #searchResults {
     margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 .video-item {
     cursor: pointer;
     margin: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background-color: white;
+    width: 300px;
+    text-align: left;
 }
 #player {
     margin-top: 20px;
+    text-align: center;
 }
 #chatBox {
     margin-top: 20px;
@@ -30,6 +49,7 @@ button {
     margin-left: auto;
     margin-right: auto;
     padding: 10px;
+    background-color: white;
 }
 #messages {
     height: 200px;
@@ -37,14 +57,18 @@ button {
     border: 1px solid #ddd;
     padding: 10px;
     text-align: left;
+    background-color: #fafafa;
 }
 .message-self {
     color: blue; /* Tin nhắn của bạn màu xanh */
+    font-weight: bold;
 }
 .message-other {
     color: green; /* Tin nhắn của người kia màu xanh lá */
+    font-style: italic;
 }
 #chatInput, #usernameInput {
     padding: 10px;
     width: 350px;
+    margin-top: 10px;
 }

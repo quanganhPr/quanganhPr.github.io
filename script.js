@@ -20,6 +20,7 @@ function enterChat() {
     if (username) {
         document.getElementById('usernamePrompt').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
+        document.getElementById('chatInput').focus();
     }
 }
 
@@ -33,7 +34,7 @@ function onYouTubeIframeAPIReady() {
 
 function searchVideos() {
     const query = document.getElementById('searchInput').value;
-    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&key=AIzaSyBpLiDptaBp9bFmnS1Jx6oWG8wu1LjzKKI`)
+    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&key=${firebaseConfig.apiKey}`)
         .then(response => response.json())
         .then(data => {
             const results = document.getElementById('searchResults');
