@@ -7,10 +7,11 @@ const firebaseConfig = {
     authDomain: "synctube-79079.firebaseapp.com",
     databaseURL: "https://synctube-79079-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "synctube-79079",
-    storageBucket: "synctube-79079.appspot.com",
+    storageBucket: "synctube-79079.firebasestorage.app",
     messagingSenderId: "32285369816",
-    appId: "1:32285369816:web:230c1234bb52d98a1dbead"
-};
+    appId: "1:32285369816:web:230c1234bb52d98a1dbead",
+    measurementId: "G-TWRY4HSCC4"
+  };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
