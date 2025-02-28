@@ -1,0 +1,50 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+#usernamePrompt {
+    margin-top: 100px;
+}
+#searchInput {
+    padding: 10px;
+    width: 300px;
+}
+button {
+    padding: 10px 20px;
+}
+#searchResults {
+    margin-top: 20px;
+}
+.video-item {
+    cursor: pointer;
+    margin: 10px;
+}
+#player {
+    margin-top: 20px;
+}
+#chatBox {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+}
+#messages {
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+.message-self {
+    color: blue; /* Tin nhắn của bạn màu xanh */
+}
+.message-other {
+    color: green; /* Tin nhắn của người kia màu xanh lá */
+}
+#chatInput, #usernameInput {
+    padding: 10px;
+    width: 350px;
+}

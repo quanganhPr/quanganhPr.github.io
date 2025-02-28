@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>SyncTube - Nghe nhạc cùng nhau</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="usernamePrompt">
+        <h2>Nhập tên của bạn:</h2>
+        <input type="text" id="usernameInput" placeholder="Tên của bạn">
+        <button onclick="enterChat()">Vào</button>
+    </div>
+    <div id="mainApp" style="display: none;">
+        <h1>SyncTube</h1>
+        <input type="text" id="searchInput" placeholder="Tìm kiếm bài hát...">
+        <button onclick="searchVideos()">Tìm</button>
+        <div id="searchResults"></div>
+        <div id="player"></div>
+        <div id="chatBox">
+            <div id="messages"></div>
+            <input type="text" id="chatInput" placeholder="Nhắn tin...">
+            <button onclick="sendMessage()">Gửi</button>
+        </div>
+    </div>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="script.js"></script>
+</body>
+</html>
