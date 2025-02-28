@@ -1,6 +1,6 @@
 let player;
 let username;
-const version = "v1.2"; // Cập nhật phiên bản của code
+const version = "v1.3"; // Cập nhật phiên bản của code
 
 // Cấu hình Firebase (thay bằng config từ Firebase Console)
 const firebaseConfig = {
@@ -39,7 +39,12 @@ function searchVideos() {
     const query = document.getElementById('searchInput').value;
     const apiKey = firebaseConfig.apiKey; // Sử dụng apiKey từ firebaseConfig
     fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&key=${apiKey}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             const results = document.getElementById('searchResults');
             results.innerHTML = '';
