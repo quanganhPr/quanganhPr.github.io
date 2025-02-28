@@ -1,7 +1,7 @@
 # SyncTube - Nghe nhạc YouTube cùng nhau
 
 ## Phiên bản
-Hiện tại: v1.1
+Hiện tại: v1.2
 
 ## Mô tả
 SyncTube là ứng dụng web cho phép hai người tìm kiếm và nghe nhạc trên YouTube cùng lúc, với thời gian phát được đồng bộ. Người dùng cũng có thể nhắn tin trong thời gian thực.

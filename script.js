@@ -1,6 +1,6 @@
 let player;
 let username;
-const version = "v1.1"; // Thêm phiên bản của code
+const version = "v1.2"; // Cập nhật phiên bản của code
 
 // Cấu hình Firebase (thay bằng config từ Firebase Console)
 const firebaseConfig = {
@@ -22,6 +22,8 @@ function enterChat() {
         document.getElementById('usernamePrompt').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         document.getElementById('chatInput').focus();
+    } else {
+        alert('Vui lòng nhập tên của bạn.');
     }
 }
 
@@ -41,16 +43,21 @@ function searchVideos() {
         .then(data => {
             const results = document.getElementById('searchResults');
             results.innerHTML = '';
-            data.items.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'video-item';
-                div.innerHTML = `${item.snippet.title}`;
-                div.onclick = () => playVideo(item.id.videoId);
-                results.appendChild(div);
-            });
+            if (data.items.length === 0) {
+                results.innerHTML = '<p>Không tìm thấy kết quả nào.</p>';
+            } else {
+                data.items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'video-item';
+                    div.innerHTML = `${item.snippet.title}`;
+                    div.onclick = () => playVideo(item.id.videoId);
+                    results.appendChild(div);
+                });
+            }
         })
         .catch(error => {
             console.error('Error fetching YouTube videos:', error);
+            alert('Có lỗi xảy ra khi tìm kiếm video.');
         });
 }
 
@@ -82,7 +89,10 @@ function sendMessage() {
             })
             .catch(error => {
                 console.error('Error sending message:', error);
+                alert('Có lỗi xảy ra khi gửi tin nhắn.');
             });
+    } else {
+        alert('Vui lòng nhập tin nhắn.');
     }
 }
 
