@@ -75,8 +75,13 @@ db.ref('playback').on('value', (snapshot) => {
 function sendMessage() {
     const text = document.getElementById('chatInput').value.trim();
     if (text) {
-        db.ref('messages').push({ username, text, timestamp: Date.now() });
-        document.getElementById('chatInput').value = '';
+        db.ref('messages').push({ username, text, timestamp: Date.now() })
+            .then(() => {
+                document.getElementById('chatInput').value = '';
+            })
+            .catch(error => {
+                console.error('Error sending message:', error);
+            });
     }
 }
 
