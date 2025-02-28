@@ -1,30 +1,35 @@
 let player;
-let socket;
 let username;
 
-// Hiển thị giao diện chính sau khi nhập tên
+// Cấu hình Firebase (thay bằng config từ Firebase Console)
+const firebaseConfig = {
+    apiKey: "AIzaSyBp3D3lw_6j2hheixsvC6elg94rvbvKB9o",
+    authDomain: "synctube-79079.firebaseapp.com",
+    databaseURL: "https://synctube-79079-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "synctube-79079",
+    storageBucket: "synctube-79079.appspot.com",
+    messagingSenderId: "32285369816",
+    appId: "1:32285369816:web:230c1234bb52d98a1dbead"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 function enterChat() {
     username = document.getElementById('usernameInput').value.trim();
     if (username) {
         document.getElementById('usernamePrompt').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
-        socket = new WebSocket('ws://localhost:3000'); // Thay bằng URL server khi deploy
-        setupWebSocket();
     }
 }
 
-// Tải YouTube IFrame Player API
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
         height: '360',
         width: '640',
-        events: {
-            'onStateChange': onPlayerStateChange
-        }
+        events: { 'onStateChange': onPlayerStateChange }
     });
 }
 
-// Tìm kiếm video
 function searchVideos() {
     const query = document.getElementById('searchInput').value;
     fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&key=AIzaSyBpLiDptaBp9bFmnS1Jx6oWG8wu1LjzKKI`)
@@ -42,32 +47,39 @@ function searchVideos() {
         });
 }
 
-// Phát video và gửi thông tin đồng bộ
 function playVideo(videoId) {
     player.loadVideoById(videoId);
-    socket.send(JSON.stringify({ type: 'play', videoId: videoId, time: 0 }));
+    db.ref('playback').set({ videoId, time: 0, lastUpdated: Date.now() });
 }
 
-// Đồng bộ khi trạng thái player thay đổi
 function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
-        socket.send(JSON.stringify({ type: 'sync', time: player.getCurrentTime() }));
+        db.ref('playback').update({ time: player.getCurrentTime(), lastUpdated: Date.now() });
     }
 }
 
-// Gửi tin nhắn
+db.ref('playback').on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data && data.videoId) {
+        player.loadVideoById(data.videoId);
+        player.seekTo(data.time);
+    }
+});
+
 function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const text = input.value.trim();
+    const text = document.getElementById('chatInput').value.trim();
     if (text) {
-        socket.send(JSON.stringify({ type: 'chat', username: username, text: text }));
-        displayMessage(username, text, true);
-        input.value = '';
+        db.ref('messages').push({ username, text, timestamp: Date.now() });
+        document.getElementById('chatInput').value = '';
     }
 }
 
-// Hiển thị tin nhắn trong chat box
-function displayMessage(sender, text, isSelf = false) {
+db.ref('messages').on('child_added', (snapshot) => {
+    const data = snapshot.val();
+    displayMessage(data.username, data.text, data.username === username);
+});
+
+function displayMessage(sender, text, isSelf) {
     const messages = document.getElementById('messages');
     const msgDiv = document.createElement('div');
     msgDiv.textContent = `${sender}: ${text}`;
@@ -76,28 +88,6 @@ function displayMessage(sender, text, isSelf = false) {
     messages.scrollTop = messages.scrollHeight;
 }
 
-// Thiết lập WebSocket
-function setupWebSocket() {
-    socket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === 'play') {
-            player.loadVideoById(data.videoId);
-            player.seekTo(data.time);
-        } else if (data.type === 'sync') {
-            player.seekTo(data.time);
-        } else if (data.type === 'chat') {
-            displayMessage(data.username, data.text, data.username === username);
-        } else if (data.type === 'history') {
-            data.messages.forEach(msg => {
-                displayMessage(msg.username, msg.text, msg.username === username);
-            });
-        }
-    };
-}
-
-// Gửi tin nhắn khi nhấn Enter
 document.getElementById('chatInput').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        sendMessage();
-    }
+    if (e.key === 'Enter') sendMessage();
 });
