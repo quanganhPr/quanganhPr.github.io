@@ -1,6 +1,6 @@
 let player;
 let username;
-const version = "v1.3"; // Cập nhật phiên bản của code
+const version = "v1.4"; // Cập nhật phiên bản của code
 
 // Cấu hình Firebase (thay bằng config từ Firebase Console)
 const firebaseConfig = {
@@ -62,7 +62,7 @@ function searchVideos() {
         })
         .catch(error => {
             console.error('Error fetching YouTube videos:', error);
-            alert('Có lỗi xảy ra khi tìm kiếm video.');
+            alert(`Có lỗi xảy ra khi tìm kiếm video: ${error.message}`);
         });
 }
 
