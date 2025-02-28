@@ -1,6 +1,6 @@
 let player;
 let username;
-const version = "v1.6"; // Cập nhật phiên bản của code
+const version = "v1.7"; // Cập nhật phiên bản của code
 
 // Cấu hình Firebase (thay bằng config từ Firebase Console)
 const firebaseConfig = {
@@ -37,7 +37,7 @@ function onYouTubeIframeAPIReady() {
 
 function searchVideos() {
     const query = document.getElementById('searchInput').value;
-    const apiKey = firebaseConfig.apiKey; // Sử dụng apiKey từ firebaseConfig
+    const apiKey = "AIzaSyBpLiDptaBp9bFmnS1Jx6oWG8wu1LjzKKI"; // Sử dụng API Key cố định
     fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&key=${apiKey}`)
         .then(response => {
             if (!response.ok) {
