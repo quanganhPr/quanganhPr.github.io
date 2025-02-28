@@ -11,7 +11,7 @@ const firebaseConfig = {
     messagingSenderId: "32285369816",
     appId: "1:32285369816:web:230c1234bb52d98a1dbead",
     measurementId: "G-TWRY4HSCC4"
-  };
+};
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -34,9 +34,8 @@ function onYouTubeIframeAPIReady() {
 
 function searchVideos() {
     const query = document.getElementById('searchInput').value;
-    // fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&key=${firebaseConfig.apiKey}`)
-    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&key=AIzaSyBpLiDptaBp9bFmnS1Jx6oWG8wu1LjzKKI`)
-
+    const apiKey = firebaseConfig.apiKey; // Sử dụng apiKey từ firebaseConfig
+    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&key=${apiKey}`)
         .then(response => response.json())
         .then(data => {
             const results = document.getElementById('searchResults');
@@ -48,6 +47,9 @@ function searchVideos() {
                 div.onclick = () => playVideo(item.id.videoId);
                 results.appendChild(div);
             });
+        })
+        .catch(error => {
+            console.error('Error fetching YouTube videos:', error);
         });
 }
 
