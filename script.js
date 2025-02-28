@@ -1,5 +1,6 @@
 let player;
 let username;
+const version = "v1.1"; // Thêm phiên bản của code
 
 // Cấu hình Firebase (thay bằng config từ Firebase Console)
 const firebaseConfig = {

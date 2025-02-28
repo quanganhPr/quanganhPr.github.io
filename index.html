@@ -13,6 +13,7 @@
     </div>
     <div id="mainApp" style="display: none;">
         <h1>SyncTube</h1>
+        <p>Version: <span id="version"></span></p> <!-- Hiển thị phiên bản của code -->
         <input type="text" id="searchInput" placeholder="Tìm kiếm bài hát...">
         <button onclick="searchVideos()">Tìm</button>
         <div id="searchResults"></div>
@@ -27,5 +28,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js"></script>
     <script src="script.js"></script>
+    <script>
+        document.getElementById('version').textContent = version; // Cập nhật phiên bản trên giao diện người dùng
+    </script>
 </body>
 </html>
