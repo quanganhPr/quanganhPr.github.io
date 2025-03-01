@@ -4,7 +4,7 @@ let audioPlayer;
 let username;
 let notificationSound;
 let userInteracted = false; // Cờ để kiểm tra xem người dùng đã tương tác với trang hay chưa
-const version = "v1.17"; // Cập nhật phiên bản của code
+const version = "v1.18"; // Cập nhật phiên bản của code
 let musicFiles = []; // Biến lưu trữ danh sách tệp nhạc
 let currentTrackIndex = 0; // Chỉ số của bài nhạc hiện tại
 
