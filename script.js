@@ -1,7 +1,10 @@
 let player;
 let playerReady = false; // Cờ để kiểm tra xem player đã sẵn sàng hay chưa
+let audioPlayer;
 let username;
-const version = "v1.11"; // Cập nhật phiên bản của code
+let notificationSound;
+let userInteracted = false; // Cờ để kiểm tra xem người dùng đã tương tác với trang hay chưa
+const version = "v1.12"; // Cập nhật phiên bản của code
 
 // Cấu hình Firebase (thay bằng config từ Firebase Console)
 const firebaseConfig = {
@@ -23,6 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
         username = savedUsername;
         enterChat();
     }
+    document.body.addEventListener('click', () => {
+        userInteracted = true; // Đặt cờ khi người dùng tương tác với trang
+    });
 });
 
 function enterChat() {
@@ -34,6 +40,9 @@ function enterChat() {
         document.getElementById('usernamePrompt').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         document.getElementById('chatInput').focus();
+        loadMusicList(); // Tải danh sách nhạc khi vào ứng dụng
+        audioPlayer = document.getElementById('audioPlayer');
+        notificationSound = document.getElementById('notificationSound');
     } else {
         alert('Vui lòng nhập tên của bạn.');
     }
@@ -113,6 +122,59 @@ db.ref('playback').on('value', (snapshot) => {
     }
 });
 
+function loadMusicList() {
+    const musicList = document.getElementById('musicList');
+    const musicFiles = [
+        'Bình Yên _ Vũ. ft Binz _ Em như dòng nước trong veo...xóa hết ưu phiền _ Nhạc Trẻ Ballad Nhẹ Nhàng_Audio_12.mp3',
+        '_Playlist 07_ List Này Sao Sầu Vậy... _ H Y U_Audio_128k.mp3'
+    ]; // Thay thế bằng danh sách tệp nhạc thực tế của bạn
+    musicFiles.forEach(file => {
+        const div = document.createElement('div');
+        div.className = 'music-item';
+        div.textContent = file;
+        div.onclick = () => {
+            if (audioPlayer) {
+                playAudio(file);
+            }
+        };
+        musicList.appendChild(div);
+    });
+}
+
+function playAudio(file) {
+    const url = `music/${file}`;
+    if (audioPlayer) {
+        audioPlayer.pause(); // Dừng phát nhạc trước khi tải tệp mới
+        audioPlayer.src = url;
+        audioPlayer.load(); // Tải tệp mới
+        audioPlayer.play().catch(error => {
+            if (error.name !== 'AbortError') {
+                console.error('Error playing audio:', error);
+            }
+        });
+        db.ref('playback').set({ url, time: 0, playing: true, lastUpdated: Date.now() });
+    }
+}
+
+db.ref('playback').on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data && data.url && audioPlayer) {
+        audioPlayer.pause(); // Dừng phát nhạc trước khi tải tệp mới
+        audioPlayer.src = data.url;
+        audioPlayer.currentTime = data.time;
+        audioPlayer.load(); // Tải tệp mới
+        if (data.playing) {
+            audioPlayer.play().catch(error => {
+                if (error.name !== 'AbortError') {
+                    console.error('Error playing audio:', error);
+                }
+            });
+        } else {
+            audioPlayer.pause();
+        }
+    }
+});
+
 function sendMessage() {
     const text = document.getElementById('chatInput').value.trim();
     if (text) {
@@ -143,10 +205,11 @@ function displayMessage(sender, text, isSelf) {
     messages.scrollTop = messages.scrollHeight;
 
     // Phát âm thanh thông báo nếu tin nhắn từ đối phương
-    if (!isSelf) {
-        const notificationSound = document.getElementById('notificationSound');
+    if (!isSelf && notificationSound && userInteracted) {
         notificationSound.play().catch(error => {
-            console.error('Error playing notification sound:', error);
+            if (error.name !== 'AbortError') {
+                console.error('Error playing notification sound:', error);
+            }
         });
     }
 }
