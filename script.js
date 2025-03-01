@@ -1,7 +1,7 @@
 let player;
 let playerReady = false; // Cờ để kiểm tra xem player đã sẵn sàng hay chưa
 let username;
-const version = "v1.10"; // Cập nhật phiên bản của code
+const version = "v1.11"; // Cập nhật phiên bản của code
 
 // Cấu hình Firebase (thay bằng config từ Firebase Console)
 const firebaseConfig = {
@@ -17,9 +17,20 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+document.addEventListener('DOMContentLoaded', () => {
+    const savedUsername = localStorage.getItem('username');
+    if (savedUsername) {
+        username = savedUsername;
+        enterChat();
+    }
+});
+
 function enterChat() {
-    username = document.getElementById('usernameInput').value.trim();
+    if (!username) {
+        username = document.getElementById('usernameInput').value.trim();
+    }
     if (username) {
+        localStorage.setItem('username', username);
         document.getElementById('usernamePrompt').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         document.getElementById('chatInput').focus();
