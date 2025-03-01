@@ -1,5 +1,5 @@
 let username;
-const version = "v1.9"; // Cập nhật phiên bản của code
+const version = "v1.10"; // Cập nhật phiên bản của code
 
 // Cấu hình Firebase (thay bằng config từ Firebase Console)
 const firebaseConfig = {
@@ -54,6 +54,14 @@ function displayMessage(sender, text, isSelf) {
     msgDiv.className = isSelf ? 'message-self' : 'message-other';
     messages.appendChild(msgDiv);
     messages.scrollTop = messages.scrollHeight;
+
+    // Phát âm thanh thông báo nếu tin nhắn từ đối phương
+    if (!isSelf) {
+        const notificationSound = document.getElementById('notificationSound');
+        notificationSound.play().catch(error => {
+            console.error('Error playing notification sound:', error);
+        });
+    }
 }
 
 document.getElementById('chatInput').addEventListener('keypress', (e) => {

@@ -21,7 +21,8 @@
             <button onclick="sendMessage()">Gửi</button>
         </div>
     </div>
-    <!-- Sử dụng đúng các tệp Firebase -->
+    <!-- Thêm phần tử audio để phát âm thanh thông báo từ tệp có sẵn trong source -->
+    <audio id="notificationSound" src="file-sounds-1150-pristine.mp3" preload="auto"></audio>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
