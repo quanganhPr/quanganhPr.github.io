@@ -1,5 +1,5 @@
 let username;
-const version = "v1.8"; // Cập nhật phiên bản của code
+const version = "v1.9"; // Cập nhật phiên bản của code
 
 // Cấu hình Firebase (thay bằng config từ Firebase Console)
 const firebaseConfig = {
@@ -57,5 +57,15 @@ function displayMessage(sender, text, isSelf) {
 }
 
 document.getElementById('chatInput').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendMessage();
+    if (e.key === 'Enter') {
+        sendMessage();
+        e.preventDefault(); // Ngăn chặn hành động mặc định của phím Enter
+    }
 });
+
+function checkEnter(event, callback) {
+    if (event.key === 'Enter') {
+        callback();
+        event.preventDefault(); // Ngăn chặn hành động mặc định của phím Enter
+    }
+}

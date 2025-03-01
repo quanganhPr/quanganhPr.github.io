@@ -3,14 +3,29 @@ body {
     text-align: center;
     padding: 20px;
     background-color: #f0f0f0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+#usernamePrompt, #mainApp {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
 #usernamePrompt {
-    margin-top: 100px;
     text-align: center;
 }
-#searchInput {
+#searchInput, #chatInput, #usernameInput {
     padding: 10px;
-    width: 300px;
+    width: 100%;
+    box-sizing: border-box;
     margin-bottom: 10px;
 }
 button {
@@ -19,24 +34,26 @@ button {
     color: white;
     border: none;
     cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
 }
 button:hover {
     background-color: #45a049;
 }
-#searchResults {
+#searchResults, #messages {
     margin-top: 20px;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
 }
-.video-item {
+.video-item, .message-item {
     cursor: pointer;
-    margin: 10px;
     padding: 10px;
     border: 1px solid #ddd;
     background-color: white;
-    width: 300px;
     text-align: left;
+    border-radius: 4px;
 }
 #player {
     margin-top: 20px;
@@ -45,11 +62,10 @@ button:hover {
 #chatBox {
     margin-top: 20px;
     border: 1px solid #ccc;
-    width: 500px;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
     padding: 10px;
     background-color: white;
+    box-sizing: border-box;
 }
 #messages {
     height: 200px;
@@ -58,6 +74,7 @@ button:hover {
     padding: 10px;
     text-align: left;
     background-color: #fafafa;
+    box-sizing: border-box;
 }
 .message-self {
     color: blue; /* Tin nhắn của bạn màu xanh */
@@ -66,9 +83,4 @@ button:hover {
 .message-other {
     color: green; /* Tin nhắn của người kia màu xanh lá */
     font-style: italic;
-}
-#chatInput, #usernameInput {
-    padding: 10px;
-    width: 350px;
-    margin-top: 10px;
 }

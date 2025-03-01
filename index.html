@@ -8,7 +8,7 @@
 <body>
     <div id="usernamePrompt">
         <h2>Nhập tên của bạn:</h2>
-        <input type="text" id="usernameInput" placeholder="Tên của bạn">
+        <input type="text" id="usernameInput" placeholder="Tên của bạn" onkeypress="checkEnter(event, enterChat)">
         <button onclick="enterChat()">Vào</button>
         <p>Version: <span id="version"></span></p> <!-- Hiển thị phiên bản của code -->
     </div>
@@ -21,8 +21,9 @@
             <button onclick="sendMessage()">Gửi</button>
         </div>
     </div>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js"></script>
+    <!-- Sử dụng đúng các tệp Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
     <script>
         document.getElementById('version').textContent = version; // Cập nhật phiên bản trên giao diện người dùng
