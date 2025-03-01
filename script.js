@@ -165,7 +165,7 @@ function filterMusicList() {
 }
 
 function playAudio(file) {
-    const url = `music/${file}`; // Đường dẫn đến tệp nhạc trong thư mục local
+    const url = `${file}`; // Đường dẫn đến tệp nhạc trong thư mục local
     if (audioPlayer) {
         audioPlayer.pause(); // Dừng phát nhạc trước khi tải tệp mới
         audioPlayer.src = url;
