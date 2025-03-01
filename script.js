@@ -1,3 +1,5 @@
+let player;
+let playerReady = false; // Cờ để kiểm tra xem player đã sẵn sàng hay chưa
 let username;
 const version = "v1.10"; // Cập nhật phiên bản của code
 
@@ -25,6 +27,80 @@ function enterChat() {
         alert('Vui lòng nhập tên của bạn.');
     }
 }
+
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+        height: '360',
+        width: '640',
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
+    });
+}
+
+function onPlayerReady(event) {
+    playerReady = true; // Đặt cờ playerReady thành true khi player đã sẵn sàng
+}
+
+function searchVideos() {
+    const query = document.getElementById('searchInput').value;
+    const apiKey = "AIzaSyBpLiDptaBp9bFmnS1Jx6oWG8wu1LjzKKI"; // Sử dụng API Key cứng
+    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&key=${apiKey}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const results = document.getElementById('searchResults');
+            results.innerHTML = '';
+            if (data.items.length === 0) {
+                results.innerHTML = '<p>Không tìm thấy kết quả nào.</p>';
+            } else {
+                data.items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'video-item';
+                    div.innerHTML = `${item.snippet.title}`;
+                    div.onclick = () => playVideo(item.id.videoId);
+                    results.appendChild(div);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching YouTube videos:', error);
+            alert(`Có lỗi xảy ra khi tìm kiếm video: ${error.message}`);
+        });
+}
+
+function playVideo(videoId) {
+    if (playerReady && player && player.loadVideoById) {
+        player.loadVideoById(videoId);
+        player.unMute(); // Bỏ tắt tiếng khi phát video
+        db.ref('playback').set({ videoId, time: 0, lastUpdated: Date.now() });
+    } else {
+        console.error('Player is not ready.');
+    }
+}
+
+function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+        db.ref('playback').update({ time: player.getCurrentTime(), lastUpdated: Date.now() });
+    }
+}
+
+db.ref('playback').on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data && data.videoId) {
+        if (playerReady && player && player.loadVideoById) {
+            player.loadVideoById(data.videoId);
+            player.seekTo(data.time);
+        } else {
+            console.error('Player is not ready.');
+        }
+    }
+});
 
 function sendMessage() {
     const text = document.getElementById('chatInput').value.trim();
@@ -74,6 +150,6 @@ document.getElementById('chatInput').addEventListener('keypress', (e) => {
 function checkEnter(event, callback) {
     if (event.key === 'Enter') {
         callback();
-        event.preventDefault(); // Ngăn chặn hành động mặc định của phím Enter 
+        event.preventDefault(); // Ngăn chặn hành động mặc định của phím Enter
     }
 }
