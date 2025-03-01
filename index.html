@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>SyncTube - Nghe nhạc cùng nhau</title>
+    <title>SyncChat - Nhắn tin cùng nhau</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -10,26 +10,23 @@
         <h2>Nhập tên của bạn:</h2>
         <input type="text" id="usernameInput" placeholder="Tên của bạn">
         <button onclick="enterChat()">Vào</button>
+        <p>Version: <span id="version"></span></p> <!-- Hiển thị phiên bản của code -->
     </div>
     <div id="mainApp" style="display: none;">
-        <h1>SyncTube</h1>
-        <p>Version: <span id="version"></span></p> <!-- Hiển thị phiên bản của code -->
-        <input type="text" id="searchInput" placeholder="Tìm kiếm bài hát...">
-        <button onclick="searchVideos()">Tìm</button>
-        <div id="searchResults"></div>
-        <div id="player"></div>
+        <h1>SyncChat</h1>
+        <p>Version: <span id="versionMain"></span></p> <!-- Hiển thị phiên bản của code -->
         <div id="chatBox">
             <div id="messages"></div>
             <input type="text" id="chatInput" placeholder="Nhắn tin...">
             <button onclick="sendMessage()">Gửi</button>
         </div>
     </div>
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js"></script>
     <script src="script.js"></script>
     <script>
         document.getElementById('version').textContent = version; // Cập nhật phiên bản trên giao diện người dùng
+        document.getElementById('versionMain').textContent = version; // Cập nhật phiên bản trên giao diện người dùng
     </script>
 </body>
 </html>

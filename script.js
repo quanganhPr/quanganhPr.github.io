@@ -1,6 +1,5 @@
-let player;
 let username;
-const version = "v1.7"; // Cập nhật phiên bản của code
+const version = "v1.8"; // Cập nhật phiên bản của code
 
 // Cấu hình Firebase (thay bằng config từ Firebase Console)
 const firebaseConfig = {
@@ -26,64 +25,6 @@ function enterChat() {
         alert('Vui lòng nhập tên của bạn.');
     }
 }
-
-function onYouTubeIframeAPIReady() {
-    player = new YT.Player('player', {
-        height: '360',
-        width: '640',
-        events: { 'onStateChange': onPlayerStateChange }
-    });
-}
-
-function searchVideos() {
-    const query = document.getElementById('searchInput').value;
-    const apiKey = "AIzaSyBpLiDptaBp9bFmnS1Jx6oWG8wu1LjzKKI"; // Sử dụng API Key cố định
-    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&key=${apiKey}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            const results = document.getElementById('searchResults');
-            results.innerHTML = '';
-            if (data.items.length === 0) {
-                results.innerHTML = '<p>Không tìm thấy kết quả nào.</p>';
-            } else {
-                data.items.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'video-item';
-                    div.innerHTML = `${item.snippet.title}`;
-                    div.onclick = () => playVideo(item.id.videoId);
-                    results.appendChild(div);
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching YouTube videos:', error);
-            alert(`Có lỗi xảy ra khi tìm kiếm video: ${error.message}`);
-        });
-}
-
-function playVideo(videoId) {
-    player.loadVideoById(videoId);
-    db.ref('playback').set({ videoId, time: 0, lastUpdated: Date.now() });
-}
-
-function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.PLAYING) {
-        db.ref('playback').update({ time: player.getCurrentTime(), lastUpdated: Date.now() });
-    }
-}
-
-db.ref('playback').on('value', (snapshot) => {
-    const data = snapshot.val();
-    if (data && data.videoId) {
-        player.loadVideoById(data.videoId);
-        player.seekTo(data.time);
-    }
-});
 
 function sendMessage() {
     const text = document.getElementById('chatInput').value.trim();
