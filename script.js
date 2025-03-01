@@ -4,7 +4,7 @@ let audioPlayer;
 let username;
 let notificationSound;
 let userInteracted = false; // Cờ để kiểm tra xem người dùng đã tương tác với trang hay chưa
-const version = "v1.18"; // Cập nhật phiên bản của code
+const version = "v1.19"; // Cập nhật phiên bản của code
 let musicFiles = []; // Biến lưu trữ danh sách tệp nhạc
 let currentTrackIndex = 0; // Chỉ số của bài nhạc hiện tại
 
@@ -165,7 +165,7 @@ function filterMusicList() {
 }
 
 function playAudio(file) {
-    const url = `music/${file}`; // Đường dẫn đến tệp nhạc trong thư mục local
+    const url = `${file}`; // Đường dẫn đến tệp nhạc trong thư mục local
     if (audioPlayer) {
         audioPlayer.pause(); // Dừng phát nhạc trước khi tải tệp mới
         audioPlayer.src = url;
