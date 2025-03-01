@@ -76,6 +76,16 @@ button:hover {
     background-color: #fafafa;
     box-sizing: border-box;
 }
+#musicList {
+    height: 200px; /* Chiều cao của ô chứa danh sách nhạc */
+    overflow-y: auto; /* Cho phép cuộn dọc */
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+    background-color: #fafafa;
+    box-sizing: border-box;
+    margin-top: 20px;
+}
 .message-self {
     color: blue; /* Tin nhắn của bạn màu xanh */
     font-weight: bold;
@@ -83,4 +93,8 @@ button:hover {
 .message-other {
     color: green; /* Tin nhắn của người kia màu xanh lá */
     font-style: italic;
+}
+.music-item.playing {
+    background-color: #d3d3d3; /* Màu nền bôi mờ */
+    font-weight: bold; /* In đậm */
 }

@@ -4,7 +4,9 @@ let audioPlayer;
 let username;
 let notificationSound;
 let userInteracted = false; // Cờ để kiểm tra xem người dùng đã tương tác với trang hay chưa
-const version = "v1.12"; // Cập nhật phiên bản của code
+const version = "v1.15"; // Cập nhật phiên bản của code
+let musicFiles = []; // Biến lưu trữ danh sách tệp nhạc
+let currentTrackIndex = 0; // Chỉ số của bài nhạc hiện tại
 
 // Cấu hình Firebase (thay bằng config từ Firebase Console)
 const firebaseConfig = {
@@ -29,6 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', () => {
         userInteracted = true; // Đặt cờ khi người dùng tương tác với trang
     });
+    document.getElementById('version').textContent = version; // Cập nhật phiên bản trên giao diện người dùng
+    document.getElementById('versionMain').textContent = version; // Cập nhật phiên bản trên giao diện người dùng
 });
 
 function enterChat() {
@@ -43,6 +47,7 @@ function enterChat() {
         loadMusicList(); // Tải danh sách nhạc khi vào ứng dụng
         audioPlayer = document.getElementById('audioPlayer');
         notificationSound = document.getElementById('notificationSound');
+        audioPlayer.addEventListener('ended', playNextTrack); // Thêm sự kiện khi bài nhạc kết thúc
     } else {
         alert('Vui lòng nhập tên của bạn.');
     }
@@ -124,20 +129,38 @@ db.ref('playback').on('value', (snapshot) => {
 
 function loadMusicList() {
     const musicList = document.getElementById('musicList');
-    const musicFiles = [
-        'Bình Yên _ Vũ. ft Binz _ Em như dòng nước trong veo...xóa hết ưu phiền _ Nhạc Trẻ Ballad Nhẹ Nhàng_Audio_12.mp3',
-        '_Playlist 07_ List Này Sao Sầu Vậy... _ H Y U_Audio_128k.mp3'
-    ]; // Thay thế bằng danh sách tệp nhạc thực tế của bạn
-    musicFiles.forEach(file => {
-        const div = document.createElement('div');
-        div.className = 'music-item';
-        div.textContent = file;
-        div.onclick = () => {
-            if (audioPlayer) {
-                playAudio(file);
-            }
-        };
-        musicList.appendChild(div);
+    fetch('musicFiles.txt')
+        .then(response => response.text())
+        .then(text => {
+            musicFiles = text.split('\n').filter(file => file.trim() !== '');
+            musicFiles.forEach((file, index) => {
+                const div = document.createElement('div');
+                div.className = 'music-item';
+                div.textContent = file;
+                div.onclick = () => {
+                    if (audioPlayer) {
+                        currentTrackIndex = index;
+                        playAudio(file);
+                    }
+                };
+                musicList.appendChild(div);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading music files:', error);
+        });
+}
+
+function filterMusicList() {
+    const query = document.getElementById('musicSearchInput').value.toLowerCase();
+    const musicItems = document.querySelectorAll('#musicList .music-item');
+    musicItems.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(query)) {
+            item.style.display = '';
+        } else {
+            item.style.display = 'none';
+        }
     });
 }
 
@@ -147,13 +170,29 @@ function playAudio(file) {
         audioPlayer.pause(); // Dừng phát nhạc trước khi tải tệp mới
         audioPlayer.src = url;
         audioPlayer.load(); // Tải tệp mới
-        audioPlayer.play().catch(error => {
-            if (error.name !== 'AbortError') {
-                console.error('Error playing audio:', error);
-            }
+        audioPlayer.play().then(() => {
+            db.ref('playback').set({ url, time: 0, playing: true, lastUpdated: Date.now() });
+            updatePlayingTrack();
+        }).catch(error => {
+            console.error('Error playing audio:', error);
         });
-        db.ref('playback').set({ url, time: 0, playing: true, lastUpdated: Date.now() });
     }
+}
+
+function playNextTrack() {
+    currentTrackIndex = (currentTrackIndex + 1) % musicFiles.length;
+    playAudio(musicFiles[currentTrackIndex]);
+}
+
+function updatePlayingTrack() {
+    const musicItems = document.querySelectorAll('#musicList .music-item');
+    musicItems.forEach((item, index) => {
+        if (index === currentTrackIndex) {
+            item.classList.add('playing');
+        } else {
+            item.classList.remove('playing');
+        }
+    });
 }
 
 db.ref('playback').on('value', (snapshot) => {
@@ -163,15 +202,10 @@ db.ref('playback').on('value', (snapshot) => {
         audioPlayer.src = data.url;
         audioPlayer.currentTime = data.time;
         audioPlayer.load(); // Tải tệp mới
-        if (data.playing) {
-            audioPlayer.play().catch(error => {
-                if (error.name !== 'AbortError') {
-                    console.error('Error playing audio:', error);
-                }
-            });
-        } else {
-            audioPlayer.pause();
-        }
+        audioPlayer.play().catch(error => {
+            console.error('Error playing audio:', error);
+        });
+        updatePlayingTrack();
     }
 });
 
