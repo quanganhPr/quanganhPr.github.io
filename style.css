@@ -98,3 +98,19 @@ button:hover {
     background-color: #d3d3d3; /* Màu nền bôi mờ */
     font-weight: bold; /* In đậm */
 }
+
+/* Media Queries cho thiết bị di động */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+    #usernamePrompt, #mainApp {
+        padding: 10px;
+    }
+    #searchInput, #chatInput, #usernameInput, button {
+        padding: 8px;
+    }
+    #messages, #musicList {
+        height: 150px;
+    }
+}
