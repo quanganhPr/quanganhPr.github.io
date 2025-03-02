@@ -1,28 +1,10 @@
 let player;
 let playerReady = false; // Cờ để kiểm tra xem player đã sẵn sàng hay chưa
 let audioPlayer;
-let username;
 let notificationSound;
 let userInteracted = false; // Cờ để kiểm tra xem người dùng đã tương tác với trang hay chưa
-const version = "v2.1"; // Cập nhật phiên bản của code
 let musicFiles = []; // Biến lưu trữ danh sách tệp nhạc
 let currentTrackIndex = 0; // Chỉ số của bài nhạc hiện tại
-
-require('dotenv').config();
-
-// Cấu hình Firebase (thay bằng config từ Firebase Console)
-const firebaseConfig = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    databaseURL: process.env.FIREBASE_DATABASE_URL,
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.FIREBASE_APP_ID,
-    measurementId: process.env.FIREBASE_MEASUREMENT_ID
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
 
 document.addEventListener('DOMContentLoaded', () => {
     const savedUsername = localStorage.getItem('username');
@@ -37,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('versionMain').textContent = version; // Cập nhật phiên bản trên giao diện người dùng
 });
 
-function enterChat() {
+window.enterChat = function() {
     if (!username) {
         username = document.getElementById('usernameInput').value.trim();
     }
@@ -53,7 +35,7 @@ function enterChat() {
     } else {
         alert('Vui lòng nhập tên của bạn.');
     }
-}
+};
 
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
@@ -72,7 +54,7 @@ function onPlayerReady(event) {
 
 function searchVideos() {
     const query = document.getElementById('searchInput').value;
-    const apiKey = process.env.YOUTUBE_API_KEY;
+    const apiKey = "AIzaSyBpLiDptaBp9bFmnS1Jx6oWG8wu1LjzKKI";
     fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&key=${apiKey}`)
         .then(response => {
             if (!response.ok) {
@@ -167,17 +149,23 @@ function filterMusicList() {
 }
 
 function playAudio(file) {
-    const url = `${file}`; // Đường dẫn đến tệp nhạc trong thư mục local
+    const url = `music/${file}`; // Đường dẫn đến tệp nhạc trong thư mục music
     if (audioPlayer) {
         audioPlayer.pause(); // Dừng phát nhạc trước khi tải tệp mới
         audioPlayer.src = url;
         audioPlayer.load(); // Tải tệp mới
-        audioPlayer.play().then(() => {
-            db.ref('playback').set({ url, time: 0, playing: true, lastUpdated: Date.now() });
-            updatePlayingTrack();
-        }).catch(error => {
-            console.error('Error playing audio:', error);
-        });
+        if (userInteracted) {
+            audioPlayer.play().then(() => {
+                db.ref('playback').set({ url, time: 0, playing: true, lastUpdated: Date.now() });
+                updatePlayingTrack();
+            }).catch(error => {
+                console.error('Error playing audio:', error);
+            });
+        } else {
+            console.warn('User has not interacted with the document yet.');
+        }
+    } else {
+        console.error('Audio player is not initialized.');
     }
 }
 
@@ -204,14 +192,18 @@ db.ref('playback').on('value', (snapshot) => {
         audioPlayer.src = data.url;
         audioPlayer.currentTime = data.time;
         audioPlayer.load(); // Tải tệp mới
-        audioPlayer.play().catch(error => {
-            console.error('Error playing audio:', error);
-        });
+        if (userInteracted) {
+            audioPlayer.play().catch(error => {
+                console.error('Error playing audio:', error);
+            });
+        } else {
+            console.warn('User has not interacted with the document yet.');
+        }
         updatePlayingTrack();
     }
 });
 
-function sendMessage() {
+window.sendMessage = function() {
     const text = document.getElementById('chatInput').value.trim();
     if (text) {
         db.ref('messages').push({ username, text, timestamp: Date.now() })
@@ -225,7 +217,7 @@ function sendMessage() {
     } else {
         alert('Vui lòng nhập tin nhắn.');
     }
-}
+};
 
 db.ref('messages').on('child_added', (snapshot) => {
     const data = snapshot.val();
@@ -257,9 +249,9 @@ document.getElementById('chatInput').addEventListener('keypress', (e) => {
     }
 });
 
-function checkEnter(event, callback) {
+window.checkEnter = function(event, callback) {
     if (event.key === 'Enter') {
         callback();
         event.preventDefault(); // Ngăn chặn hành động mặc định của phím Enter
     }
-}
+};
