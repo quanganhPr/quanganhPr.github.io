@@ -5,34 +5,149 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SyncTube - Nhắn tin cùng nhau</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    <script>
+        const version = "v2.3"; // Đặt biến version ở đây để đảm bảo nó được khởi tạo đúng cách
+        let username; // Định nghĩa biến username trong phạm vi toàn cục
+        const firebaseConfig = {
+            apiKey: "AIzaSyBp3D3lw_6j2hheixsvC6elg94rvbvKB9o",
+            authDomain: "synctube-79079.firebaseapp.com",
+            databaseURL: "https://synctube-79079-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "synctube-79079",
+            storageBucket: "synctube-79079.firebasestorage.app",
+            messagingSenderId: "32285369816",
+            appId: "1:32285369816:web:230c1234bb52d98a1dbead",
+            measurementId: "G-TWRY4HSCC4"
+        };
+        const youtubeApiKey = "AIzaSyBpLiDptaBp9bFmnS1Jx6oWG8wu1LjzKKI";
+
+        // Khởi tạo Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        window.enterChat = function() {
+            if (!username) {
+                username = document.getElementById('usernameInput').value.trim();
+            }
+            if (username) {
+                localStorage.setItem('username', username);
+                document.getElementById('usernamePrompt').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                document.getElementById('chatInput').focus();
+                loadMusicList(); // Tải danh sách nhạc khi vào ứng dụng
+                audioPlayer = document.getElementById('audioPlayer');
+                notificationSound = document.getElementById('notificationSound');
+                audioPlayer.addEventListener('ended', playNextTrack); // Thêm sự kiện khi bài nhạc kết thúc
+            } else {
+                alert('Vui lòng nhập tên của bạn.');
+            }
+        };
+
+        window.sendMessage = function() {
+            const text = document.getElementById('chatInput').value.trim();
+            if (text) {
+                db.ref('messages').push({ username, text, timestamp: Date.now() })
+                    .then(() => {
+                        document.getElementById('chatInput').value = '';
+                    })
+                    .catch(error => {
+                        console.error('Error sending message:', error);
+                        alert('Có lỗi xảy ra khi gửi tin nhắn.');
+                    });
+            } else {
+                alert('Vui lòng nhập tin nhắn.');
+            }
+        };
+
+        window.loadMusicList = function() {
+            const musicList = document.getElementById('musicList');
+            fetch('musicFiles.txt')
+                .then(response => response.text())
+                .then(text => {
+                    musicFiles = text.split('\n').filter(file => file.trim() !== '');
+                    musicFiles.forEach((file, index) => {
+                        const div = document.createElement('div');
+                        div.className = 'music-item';
+                        div.textContent = file;
+                        div.onclick = () => {
+                            if (audioPlayer) {
+                                currentTrackIndex = index;
+                                playAudio(file);
+                            }
+                        };
+                        musicList.appendChild(div);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading music files:', error);
+                });
+        };
+
+        function playAudio(file) {
+            const url = `music/${file}`; // Đường dẫn đến tệp nhạc trong thư mục music
+            if (audioPlayer) {
+                audioPlayer.pause(); // Dừng phát nhạc trước khi tải tệp mới
+                audioPlayer.src = url;
+                audioPlayer.load(); // Tải tệp mới
+                if (userInteracted) {
+                    audioPlayer.play().then(() => {
+                        db.ref('playback').set({ url, time: 0, playing: true, lastUpdated: Date.now() });
+                        updatePlayingTrack();
+                    }).catch(error => {
+                        console.error('Error playing audio:', error);
+                    });
+                } else {
+                    console.warn('User has not interacted with the document yet.');
+                }
+            } else {
+                console.error('Audio player is not initialized.');
+            }
+        }
+
+        function playNextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % musicFiles.length;
+            playAudio(musicFiles[currentTrackIndex]);
+        }
+
+        function updatePlayingTrack() {
+            const musicItems = document.querySelectorAll('#musicList .music-item');
+            musicItems.forEach((item, index) => {
+                if (index === currentTrackIndex) {
+                    item.classList.add('playing');
+                } else {
+                    item.classList.remove('playing');
+                }
+            });
+        }
+    </script>
 </head>
 <body>
     <div id="usernamePrompt">
         <h2>Nhập tên của bạn:</h2>
         <input type="text" id="usernameInput" placeholder="Tên của bạn" onkeypress="checkEnter(event, enterChat)">
         <button onclick="enterChat()">Vào</button>
-        <p>Version: <span id="version"></span></p> <!-- Hiển thị phiên bản của code -->
+        <p>Version: <span id="version"></span></p>
     </div>
     <div id="mainApp" style="display: none;">
         <h1>SyncTube</h1>
-        <p>Version: <span id="versionMain"></span></p> <!-- Hiển thị phiên bản của code -->
+        <p>Version: <span id="versionMain"></span></p>
         <div id="chatBox">
             <div id="messages"></div>
             <input type="text" id="chatInput" placeholder="Nhắn tin...">
             <button onclick="sendMessage()">Gửi</button>
         </div>
-        <input type="text" id="musicSearchInput" placeholder="Tìm kiếm bài nhạc..." oninput="filterMusicList()"> <!-- Ô tìm kiếm nhạc -->
-        <div id="musicList"></div> <!-- Danh sách nhạc -->
-        <audio id="audioPlayer" controls></audio> <!-- Trình phát nhạc -->
+        <input type="text" id="musicSearchInput" placeholder="Tìm kiếm bài nhạc..." oninput="filterMusicList()">
+        <div id="musicList"></div>
+        <audio id="audioPlayer" controls></audio>
     </div>
-    <!-- Thêm phần tử audio để phát âm thanh thông báo từ tệp có sẵn trong source -->
     <audio id="notificationSound" src="file-sounds-1150-pristine.mp3" preload="auto"></audio>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
     <script>
-        document.getElementById('version').textContent = version; // Cập nhật phiên bản trên giao diện người dùng
-        document.getElementById('versionMain').textContent = version; // Cập nhật phiên bản trên giao diện người dùng
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('version').textContent = version;
+            document.getElementById('versionMain').textContent = version;
+        });
     </script>
 </body>
 </html>

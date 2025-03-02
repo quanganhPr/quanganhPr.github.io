@@ -1,7 +1,7 @@
 # SyncChat - Nhắn tin cùng nhau
 
 ## Phiên bản
-Hiện tại: v1.7
+Hiện tại: v2.1
 
 ## Mô tả
 SyncChat là ứng dụng web cho phép hai người nhắn tin với nhau trong thời gian thực.
@@ -10,11 +10,11 @@ SyncChat là ứng dụng web cho phép hai người nhắn tin với nhau trong
 - Cấu hình Firebase (Realtime Database):
   - Đăng ký Firebase tại https://firebase.google.com/.
   - Tạo project, bật Realtime Database (chế độ test mode).
-  - Lấy cấu hình (`apiKey`, `databaseURL`, v.v.) và thay vào `firebaseConfig` trong `script.js`.
+  - Lấy cấu hình (`apiKey`, `databaseURL`, v.v.) và thêm vào file `.env`.
 
 ## Hướng dẫn cài đặt
 1. Clone repository: `git clone <URL>`
-2. Cập nhật Firebase config trong `script.js`.
+2. Tạo file `.env` và thêm cấu hình Firebase và YouTube API key.
 3. Push lên GitHub và cấu hình GitHub Pages:
    - Vào **Settings** > **Pages**, chọn nhánh `main` và thư mục `/public`.
 4. Mở URL GitHub Pages (ví dụ: `https://username.github.io/SyncChat`) trên hai trình duyệt/tab để kiểm tra.
