@@ -4,20 +4,22 @@ let audioPlayer;
 let username;
 let notificationSound;
 let userInteracted = false; // Cờ để kiểm tra xem người dùng đã tương tác với trang hay chưa
-const version = "v2.0"; // Cập nhật phiên bản của code
+const version = "v2.1"; // Cập nhật phiên bản của code
 let musicFiles = []; // Biến lưu trữ danh sách tệp nhạc
 let currentTrackIndex = 0; // Chỉ số của bài nhạc hiện tại
 
+require('dotenv').config();
+
 // Cấu hình Firebase (thay bằng config từ Firebase Console)
 const firebaseConfig = {
-    apiKey: "AIzaSyBp3D3lw_6j2hheixsvC6elg94rvbvKB9o",
-    authDomain: "synctube-79079.firebaseapp.com",
-    databaseURL: "https://synctube-79079-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "synctube-79079",
-    storageBucket: "synctube-79079.firebasestorage.app",
-    messagingSenderId: "32285369816",
-    appId: "1:32285369816:web:230c1234bb52d98a1dbead",
-    measurementId: "G-TWRY4HSCC4"
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    databaseURL: process.env.FIREBASE_DATABASE_URL,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.FIREBASE_APP_ID,
+    measurementId: process.env.FIREBASE_MEASUREMENT_ID
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
@@ -70,7 +72,7 @@ function onPlayerReady(event) {
 
 function searchVideos() {
     const query = document.getElementById('searchInput').value;
-    const apiKey = "AIzaSyBpLiDptaBp9bFmnS1Jx6oWG8wu1LjzKKI"; // Sử dụng API Key cứng
+    const apiKey = process.env.YOUTUBE_API_KEY;
     fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&key=${apiKey}`)
         .then(response => {
             if (!response.ok) {
